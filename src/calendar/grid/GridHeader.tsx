@@ -1,9 +1,13 @@
 import {setDay, format} from 'date-fns';
 import { useEffect, useState } from 'react';
-import { WeekDay } from '../models';
+import {WeekDay} from '../models';
 import CalendarGridHeaderCell from './GridHeaderCell';
 
-export default function CalendarGridHeader() {
+interface CalendarGridHeaderProps {
+    locale: Locale;
+}
+
+export default function CalendarGridHeader(props: CalendarGridHeaderProps) {
     const [days, setDays] = useState<WeekDay[]>([]);
 
     useEffect(() => {
@@ -12,13 +16,13 @@ export default function CalendarGridHeader() {
         const day = setDay(today, index);
         return {
           index,
-          label: format(day, 'EEEE'),
-          shortLabel: format(day, 'EE')
+          label: format(day, 'EEEE', {locale: props.locale}),
+          shortLabel: format(day, 'EEE', {locale: props.locale})
         };
       });
       setDays(weekDays);
-    }, [])
-    
+    }, [props.locale])
+
 
     return <div className="calendar-grid calendar-grid-header">
       {days.map(day => <CalendarGridHeaderCell day={day} key={day.index} />)}

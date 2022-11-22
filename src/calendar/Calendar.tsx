@@ -8,8 +8,11 @@ export default function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
 
     return <Paper elevation={3}>
-        <Toolbar currentDate={currentDate} locale={fr} />
+        <Toolbar currentDate={currentDate}
+                 locale={fr}
+                 onDateChange={date => setCurrentDate(date)} />
 
-        <CalendarGrid currentDate={currentDate} locale={fr} />
+        <CalendarGrid currentDate={currentDate}
+                      locale={fr} />
     </Paper>
 }
