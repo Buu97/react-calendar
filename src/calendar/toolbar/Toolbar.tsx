@@ -1,12 +1,26 @@
 import { format, sub, add } from "date-fns";
-import {MouseEvent} from "react"
+import {MouseEvent, useEffect, useState} from "react"
 import { BaseComponentProps } from "../models";
 
 export interface ToolbarProps extends BaseComponentProps {
-    onDateChange?: (date: Date) => any
+    onDateChange?: (date: Date) => any;
+    minDate: Date;
+    maxDate: Date;
 }
 
 export default function Toolbar(props: ToolbarProps) {
+    const [navigationState, setNavigationState] = useState({disabledNext: false, disabledPrevious: false});
+
+    useEffect(() => {
+        const previousMonth = sub(props.currentDate, {months: 1});
+        const nextMonth = add(props.currentDate, {months: 1});
+
+        setNavigationState({
+            disabledNext: nextMonth.getMonth() > props.maxDate?.getMonth(),
+            disabledPrevious: previousMonth.getMonth() < props.minDate?.getMonth()
+        })
+    }, [props.minDate, props.maxDate, props.currentDate]);
+
     const handleClickNext = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -26,7 +40,9 @@ export default function Toolbar(props: ToolbarProps) {
     }
 
     return <div className="d-flex justify-content-between align-items-center">
-        <button className="btn" onClick={handleClickPrevious}>
+        <button className="btn"
+                onClick={handleClickPrevious}
+                disabled={navigationState.disabledPrevious}>
             <span className="material-symbols-outlined">
                 chevron_left
             </span>
@@ -36,7 +52,9 @@ export default function Toolbar(props: ToolbarProps) {
             {format(props.currentDate, 'LLLL yyyy', {locale: props.locale})}
         </span>
 
-        <button className="btn" onClick={handleClickNext}>
+        <button className="btn"
+                onClick={handleClickNext}
+                disabled={navigationState.disabledNext}>
             <span className="material-symbols-outlined">
                 chevron_right
             </span>

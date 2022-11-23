@@ -15,3 +15,9 @@ export interface Day extends WeekDay {
     available: boolean;
     appointed: boolean;
 }
+
+export interface DateConfig {
+    minDate: Date;
+    maxDate: Date;
+    appointedDates: Date[];
+}

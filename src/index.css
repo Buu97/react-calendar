@@ -1,3 +1,7 @@
+:root {
+  --bs-primary: cyan;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
@@ -18,8 +22,31 @@ code {
   font-weight: bold;
 }
 
+.calendar-grid-separator {
+  margin: 0 1rem;
+}
+
 .calendar-grid-cell {
-  padding: 1rem;
   min-width: 60px;
-  min-height: 60px;
+  min-height: 40px;
+}
+
+.calendar-grid-cell .btn {
+  padding: 1rem;
+  position: relative;
+}
+.calendar .btn:disabled, .calendar .btn:active {
+  outline: none;
+  border: none;
+}
+.calendar-grid-cell.booked .btn {
+  border: 1px solid var(--bs-primary);
+}
+.calendar-grid-cell .btn .appointment-indicator {
+  position: absolute;
+  border: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  color: var(--bs-primary);
 }

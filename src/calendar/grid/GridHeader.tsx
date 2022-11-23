@@ -21,7 +21,7 @@ export default function CalendarGridHeader(props: CalendarGridHeaderProps) {
         };
       });
       setDays(weekDays);
-    }, [props.locale])
+    }, [props.locale]);
 
 
     return <div className="calendar-grid calendar-grid-header">
