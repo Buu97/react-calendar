@@ -9,6 +9,7 @@ export interface CalendarProps {
     minDate?: Date | string;
     maxDate?: Date | string;
     appointedDates: (Date | string)[];
+    onDateSelection?: (dates: Date[]) => any;
 }
 
 export default function Calendar(props: CalendarProps) {
@@ -17,7 +18,7 @@ export default function Calendar(props: CalendarProps) {
         minDate: new Date(),
         maxDate: new Date(),
         appointedDates: []
-    })
+    });
 
     useEffect(() => {
         const appointedDates = props.appointedDates.map(d => new Date(d));
@@ -26,7 +27,13 @@ export default function Calendar(props: CalendarProps) {
             minDate: props.minDate ? new Date(props.minDate) : min(appointedDates),
             maxDate: props.maxDate ? new Date(props.maxDate) : max(appointedDates)
         });
-    }, [props.appointedDates, props.minDate, props.maxDate])
+    }, [props.appointedDates, props.minDate, props.maxDate]);
+
+    const handleDateSelection = (dates: Date[]) => {
+        if (props.onDateSelection) {
+            props.onDateSelection(dates);
+        }
+    }
 
     return <div className={'calendar card card-body'}>
         <Toolbar currentDate={currentDate}
@@ -39,6 +46,7 @@ export default function Calendar(props: CalendarProps) {
                       locale={fr}
                       appointedDates={dateConfig.appointedDates}
                       maxDate={dateConfig.maxDate}
-                      minDate={dateConfig.minDate} />
+                      minDate={dateConfig.minDate}
+                      onDateSelection={handleDateSelection} />
     </div>
 }

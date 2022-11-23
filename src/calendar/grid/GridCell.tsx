@@ -4,6 +4,7 @@ import classNames from "classnames";
 
 interface CalendarGridCellProps {
     day: Day;
+    onDaySelection?: (day: Day) => any;
 }
 
 interface DayState {
@@ -12,7 +13,7 @@ interface DayState {
     booked: boolean;
 }
 
-export default function CalendarGridCell({day}: CalendarGridCellProps) {
+export default function CalendarGridCell({day, onDaySelection}: CalendarGridCellProps) {
     const [dayState, setDayState] = useState<DayState>({appointed: false, available: true, booked: false});
     const styles = useMemo<{indicator: {visibility: VisibilityState}}>(() => {
         return {
@@ -28,15 +29,14 @@ export default function CalendarGridCell({day}: CalendarGridCellProps) {
             available: day.available,
             booked: day.booked
         });
-    }, [day]);
+    }, [day.appointed, day.booked, day.available]);
 
     const handleClick = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        setDayState({
-            ...dayState,
-            booked: true
-        });
+        if (onDaySelection) {
+            onDaySelection(day);
+        }
     }
 
     return <div className={classNames('calendar-grid-cell', {...dayState})}>
@@ -45,6 +45,13 @@ export default function CalendarGridCell({day}: CalendarGridCellProps) {
                 onClick={handleClick}>
             {day.shortLabel}
             <span className="appointment-indicator" style={styles.indicator}>.</span>
+            {dayState.booked ?
+                <span className="booked-indicator">
+                    <span className="material-symbols-outlined text-white">
+                        check
+                    </span>
+                </span>:
+                <></>}
         </button>
     </div>
 }

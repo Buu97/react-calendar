@@ -1,19 +1,20 @@
 import {useEffect, useState} from "react";
-import {setDate, getDaysInMonth, format} from "date-fns";
+import {setDate, getDaysInMonth, format, startOfMonth} from "date-fns";
 import {BaseComponentProps, DateConfig, Day} from "../models";
 import CalendarGridHeader from "./GridHeader";
 import CalendarGridCell from "./GridCell";
 
 export interface CalendarGridProps extends BaseComponentProps, DateConfig {
+    onDateSelection?: (dates: Date[]) => any;
 }
 
 export default function CalendarGrid(props: CalendarGridProps) {
     const [days, setDays] = useState<Day[]>([]);
+    const [blankDays, setBlankDays] = useState(0);
 
     useEffect(() => {
-        const firstDay = setDate(props.currentDate, 1);
+        const firstDay = startOfMonth(props.currentDate);
         const length = getDaysInMonth(firstDay);
-        const offset = Array.from({length: 7 - (firstDay.getDay() || 7)}) as any[];
         const monthDays = Array.from({length}).map((_, index) => {
             const date = setDate(props.currentDate, index + 1);
             const appointed = props.appointedDates.findIndex(d => {
@@ -30,18 +31,32 @@ export default function CalendarGrid(props: CalendarGridProps) {
             } as Day;
         });
 
-        setDays([...offset, ...monthDays]);
+        setBlankDays(firstDay.getDay());
+        setDays(monthDays);
     }, [props.currentDate, props.minDate, props.maxDate, props.appointedDates]);
+
+    const handleDaySelection = (day: Day) => {
+        const monthDay = days[day.index];
+        monthDay.booked = !monthDay.booked;
+        setDays(days.map(d => d.index === day.index ? monthDay : d));
+
+        if (props.onDateSelection) {
+            props.onDateSelection(days.reduce((acc, day) => {
+                if (day.booked) {
+                    acc = acc.concat([day.date]);
+                }
+                return acc;
+            }, [] as Date[]));
+        }
+    }
 
     return <div>
         <CalendarGridHeader locale={props.locale} />
         <hr className={'calendar-grid-separator'} />
         <div className="calendar-grid">
-            {days.map((day, index) => {
-                return day ?
-                    <CalendarGridCell key={index} day={day} /> :
-                    <div className={'calendar-grid-cell'} key={index}></div>
-            })}
+            {Array.from({length: blankDays}).map((_, index) => <div className={'calendar-grid-cell'} key={index}></div>)}
+
+            {days.map((day, index) => <CalendarGridCell key={index} day={day} onDaySelection={handleDaySelection} />)}
         </div>
     </div>
 }
